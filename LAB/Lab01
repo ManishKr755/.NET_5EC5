@@ -1,0 +1,153 @@
+using System;
+class Course
+{
+    private string courseName;
+    private double fees;
+    private int years;
+    public Course(string courseName, double fees, int years)
+    {
+        this.courseName = courseName;
+        this.fees = fees;
+        this.years = years;
+    }
+    public string CourseName { get { return courseName; } }
+    public double Fees { get { return fees; } }
+    public int Years { get { return years; } }
+    public void ShowCourseDetails()
+    {
+        Console.WriteLine("\n--- Course Details ---");
+        Console.WriteLine("Course Name : " + courseName);
+        Console.WriteLine("Duration    : " + years + " years");
+        Console.WriteLine("Fees        : Rs. " + fees.ToString("N2"));
+    }
+}
+class Student
+{
+    private string firstName;
+    private int age;
+    private string gender;
+    private string address;
+    private double marks12th;
+    private Course selectedCourse;
+    private double discount;
+    private double finalFees;
+    private bool discountCalculated;
+    public Student(string firstName, int age, string gender, string address, double marks12th)
+    {
+        this.firstName = firstName;
+        this.age = age;
+        this.gender = gender;
+        this.address = address;
+        this.marks12th = marks12th;
+        this.discountCalculated = false;
+    }
+    public string FirstName { get { return firstName; } }
+    public double Marks12th { get { return marks12th; } }
+    public bool IsEligible()
+    {
+        return marks12th >= 40;
+    }
+    public void SetCourse(Course course)
+    {
+        selectedCourse = course;
+    }
+    public void CalculateDiscount()
+    {
+        if (marks12th >= 90)
+            discount = 40;
+        else if (marks12th >= 75)
+            discount = 30;
+        else if (marks12th >= 60)
+            discount = 20;
+        else
+            discount = 0;
+        double discountAmount = (selectedCourse.Fees * discount) / 100;
+        finalFees = selectedCourse.Fees - discountAmount;
+        discountCalculated = true;
+    }
+    public void ShowRegistrationDetails()
+    {
+        if (!discountCalculated)
+        {
+            Console.WriteLine("Discount not calculated yet.");
+            return;
+        }
+        Console.WriteLine("\n================================");
+        Console.WriteLine("     SUCCESSFULLY REGISTERED     ");
+        Console.WriteLine("================================");
+        Console.WriteLine("Name          : " + firstName);
+        Console.WriteLine("Age           : " + age);
+        Console.WriteLine("Gender        : " + gender);
+        Console.WriteLine("Address       : " + address);
+        Console.WriteLine("12th Marks    : " + marks12th + "%");
+        Console.WriteLine("Course Chosen : " + selectedCourse.CourseName);
+        Console.WriteLine("Duration      : " + selectedCourse.Years + " years");
+        Console.WriteLine("Original Fees : Rs. " + selectedCourse.Fees.ToString("N2"));
+        Console.WriteLine("Discount      : " + discount + "%");
+        Console.WriteLine("Final Fees    : Rs. " + finalFees.ToString("N2"));
+        Console.WriteLine("================================");
+    }
+}
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine("=== STUDENT ADMISSION MANAGEMENT SYSTEM ===\n");
+        Console.Write("Enter First Name: ");
+        string firstName = Console.ReadLine() ?? "";
+        int age;
+        Console.Write("Enter Age: ");
+        while (!int.TryParse(Console.ReadLine(), out age) || age <= 0)
+        {
+            Console.Write("Invalid age. Enter Age: ");
+        }
+        Console.Write("Enter Gender: ");
+        string gender = Console.ReadLine() ?? "";
+        Console.Write("Enter Address: ");
+        string address = Console.ReadLine() ?? "";
+        double marks12th;
+        Console.Write("Enter 12th Marks (%): ");
+        while (!double.TryParse(Console.ReadLine(), out marks12th) || marks12th < 0 || marks12th > 100)
+        {
+            Console.Write("Invalid marks. Enter 12th Marks (%): ");
+        }
+        Student student = new Student(firstName, age, gender, address, marks12th);
+        if (!student.IsEligible())
+        {
+            Console.WriteLine("\n================================");
+            Console.WriteLine("Sorry, you are not eligible for admission.");
+            Console.WriteLine("Minimum 40% required in 12th Marks.");
+            Console.WriteLine("================================");
+            return;
+        }
+        Course[] courses = new Course[3];
+        courses[0] = new Course("B.Sc Computer Science", 50000, 3);
+        courses[1] = new Course("BCA", 60000, 3);
+        courses[2] = new Course("B.Tech IT", 100000, 4);
+        Console.WriteLine("\n--- Available Courses ---");
+        for (int i = 0; i < courses.Length; i++)
+        {
+            Console.WriteLine((i + 1) + ". " + courses[i].CourseName);
+        }
+        int choice;
+        Console.Write("\nSelect a course (1-3): ");
+        while (!int.TryParse(Console.ReadLine(), out choice) || choice < 1 || choice > courses.Length)
+        {
+            Console.Write("Invalid choice. Select a course (1-3): ");
+        }
+        Course selectedCourse = courses[choice - 1];
+        selectedCourse.ShowCourseDetails();
+        student.SetCourse(selectedCourse);
+        student.CalculateDiscount();
+        Console.Write("\nType 'yes' to finalize registration: ");
+        string confirm = Console.ReadLine() ?? "";
+        if (confirm.ToLower() == "yes")
+        {
+            student.ShowRegistrationDetails();
+        }
+        else
+        {
+            Console.WriteLine("Registration Cancelled.");
+        }
+    }
+}
