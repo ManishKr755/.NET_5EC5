@@ -1,18 +1,31 @@
 using System;
+
+// Class to store course-related information
 class Course
 {
+    // Private data members
     private string courseName;
     private double fees;
     private int years;
+
+    // Constructor to initialize course details
     public Course(string courseName, double fees, int years)
     {
         this.courseName = courseName;
         this.fees = fees;
         this.years = years;
     }
+
+    // Read-only property to get course name
     public string CourseName { get { return courseName; } }
+
+    // Read-only property to get course fees
     public double Fees { get { return fees; } }
+
+    // Read-only property to get course duration
     public int Years { get { return years; } }
+
+    // Method to display selected course details
     public void ShowCourseDetails()
     {
         Console.WriteLine("\n--- Course Details ---");
@@ -21,8 +34,11 @@ class Course
         Console.WriteLine("Fees        : Rs. " + fees.ToString("N2"));
     }
 }
+
+// Class to store student information and admission details
 class Student
 {
+    // Private data members
     private string firstName;
     private int age;
     private string gender;
@@ -32,6 +48,8 @@ class Student
     private double discount;
     private double finalFees;
     private bool discountCalculated;
+
+    // Constructor to initialize student details
     public Student(string firstName, int age, string gender, string address, double marks12th)
     {
         this.firstName = firstName;
@@ -41,16 +59,26 @@ class Student
         this.marks12th = marks12th;
         this.discountCalculated = false;
     }
+
+    // Read-only property to get student's name
     public string FirstName { get { return firstName; } }
+
+    // Read-only property to get 12th marks
     public double Marks12th { get { return marks12th; } }
+
+    // Check if student is eligible for admission
     public bool IsEligible()
     {
         return marks12th >= 40;
     }
+
+    // Assign selected course to student
     public void SetCourse(Course course)
     {
         selectedCourse = course;
     }
+
+    // Calculate fee discount based on 12th marks
     public void CalculateDiscount()
     {
         if (marks12th >= 90)
@@ -61,17 +89,25 @@ class Student
             discount = 20;
         else
             discount = 0;
+
+        // Calculate final fees after discount
         double discountAmount = (selectedCourse.Fees * discount) / 100;
         finalFees = selectedCourse.Fees - discountAmount;
+
+        // Mark that discount has been calculated
         discountCalculated = true;
     }
+
+    // Display complete registration details
     public void ShowRegistrationDetails()
     {
+        // Prevent displaying details before fee calculation
         if (!discountCalculated)
         {
             Console.WriteLine("Discount not calculated yet.");
             return;
         }
+
         Console.WriteLine("\n================================");
         Console.WriteLine("     SUCCESSFULLY REGISTERED     ");
         Console.WriteLine("================================");
@@ -88,30 +124,47 @@ class Student
         Console.WriteLine("================================");
     }
 }
+
+// Main class of the program
 class Program
 {
+    // Program execution starts here
     static void Main(string[] args)
     {
         Console.WriteLine("=== STUDENT ADMISSION MANAGEMENT SYSTEM ===\n");
+
+        // Input student's first name
         Console.Write("Enter First Name: ");
         string firstName = Console.ReadLine() ?? "";
+
+        // Input and validate age
         int age;
         Console.Write("Enter Age: ");
         while (!int.TryParse(Console.ReadLine(), out age) || age <= 0)
         {
             Console.Write("Invalid age. Enter Age: ");
         }
+
+        // Input gender
         Console.Write("Enter Gender: ");
         string gender = Console.ReadLine() ?? "";
+
+        // Input address
         Console.Write("Enter Address: ");
         string address = Console.ReadLine() ?? "";
+
+        // Input and validate 12th percentage
         double marks12th;
         Console.Write("Enter 12th Marks (%): ");
         while (!double.TryParse(Console.ReadLine(), out marks12th) || marks12th < 0 || marks12th > 100)
         {
             Console.Write("Invalid marks. Enter 12th Marks (%): ");
         }
+
+        // Create student object
         Student student = new Student(firstName, age, gender, address, marks12th);
+
+        // Check admission eligibility
         if (!student.IsEligible())
         {
             Console.WriteLine("\n================================");
@@ -120,27 +173,45 @@ class Program
             Console.WriteLine("================================");
             return;
         }
+
+        // Create available course objects
         Course[] courses = new Course[3];
         courses[0] = new Course("B.Sc Computer Science", 50000, 3);
         courses[1] = new Course("BCA", 60000, 3);
         courses[2] = new Course("B.Tech IT", 100000, 4);
+
+        // Display available courses
         Console.WriteLine("\n--- Available Courses ---");
         for (int i = 0; i < courses.Length; i++)
         {
             Console.WriteLine((i + 1) + ". " + courses[i].CourseName);
         }
+
+        // Input and validate course selection
         int choice;
         Console.Write("\nSelect a course (1-3): ");
         while (!int.TryParse(Console.ReadLine(), out choice) || choice < 1 || choice > courses.Length)
         {
             Console.Write("Invalid choice. Select a course (1-3): ");
         }
+
+        // Get selected course
         Course selectedCourse = courses[choice - 1];
+
+        // Display selected course information
         selectedCourse.ShowCourseDetails();
+
+        // Assign course to student
         student.SetCourse(selectedCourse);
+
+        // Calculate fee discount
         student.CalculateDiscount();
+
+        // Ask for final confirmation
         Console.Write("\nType 'yes' to finalize registration: ");
         string confirm = Console.ReadLine() ?? "";
+
+        // Complete or cancel registration
         if (confirm.ToLower() == "yes")
         {
             student.ShowRegistrationDetails();
