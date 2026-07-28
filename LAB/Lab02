@@ -1,1 +1,239 @@
+using System;
+using System.Collections.Generic;
 
+// Interface defines a contract - any class that implements IPayable
+// must provide its own CalculateSalary() logic
+interface IPayable
+{
+    double CalculateSalary();
+}
+
+// Abstract base class - cannot be instantiated directly
+// Holds common data/behavior shared by all employee types
+abstract class Employee : IPayable
+{
+    protected string name;
+    protected int id;
+    protected double basicSalary;
+
+    // Constructor - runs when a derived class object is created
+    public Employee(string name, int id, double basicSalary)
+    {
+        this.name = name;
+        this.id = id;
+        this.basicSalary = basicSalary;
+    }
+
+    // Public read-only properties to safely expose private-like data
+    public string Name { get { return name; } }
+    public int Id { get { return id; } }
+    public double BasicSalary { get { return basicSalary; } }
+
+    // Abstract method - no body here, every subclass MUST implement it differently
+    public abstract double CalculateSalary();
+
+    // Virtual method - has a default implementation but can be overridden
+    public virtual void DisplaySalarySlip()
+    {
+        Console.WriteLine("\n--------------------------------");
+        Console.WriteLine("Employee ID   : " + id);
+        Console.WriteLine("Name          : " + name);
+        Console.WriteLine("Role          : " + GetType().Name); // shows actual runtime class name
+        Console.WriteLine("Basic Salary  : Rs. " + basicSalary.ToString("N2"));
+        Console.WriteLine("Net Salary    : Rs. " + CalculateSalary().ToString("N2")); // calls overridden version
+        Console.WriteLine("--------------------------------");
+    }
+}
+
+// Manager inherits from Employee (IS-A relationship)
+class Manager : Employee
+{
+    private double bonus;
+
+    // base(...) calls the Employee constructor first to set common fields
+    public Manager(string name, int id, double basicSalary, double bonus) : base(name, id, basicSalary)
+    {
+        this.bonus = bonus;
+    }
+
+    // Overriding abstract method with Manager-specific salary logic
+    public override double CalculateSalary()
+    {
+        return basicSalary + bonus;
+    }
+
+    // Overriding virtual method, but reusing parent's version first
+    public override void DisplaySalarySlip()
+    {
+        base.DisplaySalarySlip(); // runs Employee's version first
+        Console.WriteLine("Bonus         : Rs. " + bonus.ToString("N2")); // adds Manager-specific line
+    }
+}
+
+// Developer inherits from Employee
+class Developer : Employee
+{
+    private double overtimeHours;
+    private double overtimeRate;
+
+    public Developer(string name, int id, double basicSalary, double overtimeHours, double overtimeRate) : base(name, id, basicSalary)
+    {
+        this.overtimeHours = overtimeHours;
+        this.overtimeRate = overtimeRate;
+    }
+
+    // Developer-specific salary formula
+    public override double CalculateSalary()
+    {
+        return basicSalary + (overtimeHours * overtimeRate);
+    }
+
+    public override void DisplaySalarySlip()
+    {
+        base.DisplaySalarySlip();
+        Console.WriteLine("Overtime Hours: " + overtimeHours);
+        Console.WriteLine("Overtime Pay  : Rs. " + (overtimeHours * overtimeRate).ToString("N2"));
+    }
+}
+
+// Intern inherits from Employee too, but has a completely different salary model
+class Intern : Employee
+{
+    private double stipend;
+
+    // basicSalary is passed as 0 since interns are paid via stipend, not basic salary
+    public Intern(string name, int id, double stipend) : base(name, id, 0)
+    {
+        this.stipend = stipend;
+    }
+
+    // Intern salary is just the stipend, no formula needed
+    public override double CalculateSalary()
+    {
+        return stipend;
+    }
+
+    // Fully custom slip layout (doesn't call base.DisplaySalarySlip())
+    // because interns don't have a "Basic Salary" concept to show
+    public override void DisplaySalarySlip()
+    {
+        Console.WriteLine("\n--------------------------------");
+        Console.WriteLine("Employee ID   : " + id);
+        Console.WriteLine("Name          : " + name);
+        Console.WriteLine("Role          : Intern");
+        Console.WriteLine("Stipend       : Rs. " + stipend.ToString("N2"));
+        Console.WriteLine("Net Salary    : Rs. " + CalculateSalary().ToString("N2"));
+        Console.WriteLine("--------------------------------");
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine("=== EMPLOYEE PAYROLL MANAGEMENT SYSTEM ===\n");
+
+        // List<Employee> can hold Manager, Developer, and Intern objects together
+        // because they are all "Employee" type (polymorphism in action)
+        List<Employee> employees = new List<Employee>();
+
+        int empCount;
+        Console.Write("Enter number of employees to add: ");
+        // Validation loop - keeps asking until a valid positive number is entered
+        while (!int.TryParse(Console.ReadLine(), out empCount) || empCount <= 0)
+        {
+            Console.Write("Invalid number. Enter number of employees to add: ");
+        }
+
+        // Loop once per employee to collect their details
+        for (int i = 0; i < empCount; i++)
+        {
+            Console.WriteLine("\nEmployee " + (i + 1));
+            Console.Write("Enter Name: ");
+            string name = Console.ReadLine() ?? ""; // ?? "" guards against null input
+
+            int id;
+            Console.Write("Enter ID: ");
+            while (!int.TryParse(Console.ReadLine(), out id) || id <= 0)
+            {
+                Console.Write("Invalid ID. Enter ID: ");
+            }
+
+            Console.WriteLine("Select Employee Type:");
+            Console.WriteLine("1. Manager");
+            Console.WriteLine("2. Developer");
+            Console.WriteLine("3. Intern");
+
+            int type;
+            Console.Write("Enter choice (1-3): ");
+            while (!int.TryParse(Console.ReadLine(), out type) || type < 1 || type > 3)
+            {
+                Console.Write("Invalid choice. Enter choice (1-3): ");
+            }
+
+            // Based on user choice, create the correct subclass object
+            // and add it to the list - this is where polymorphism starts
+            if (type == 1)
+            {
+                double basicSalary, bonus;
+                Console.Write("Enter Basic Salary: ");
+                while (!double.TryParse(Console.ReadLine(), out basicSalary) || basicSalary < 0)
+                {
+                    Console.Write("Invalid amount. Enter Basic Salary: ");
+                }
+                Console.Write("Enter Bonus: ");
+                while (!double.TryParse(Console.ReadLine(), out bonus) || bonus < 0)
+                {
+                    Console.Write("Invalid amount. Enter Bonus: ");
+                }
+                employees.Add(new Manager(name, id, basicSalary, bonus));
+            }
+            else if (type == 2)
+            {
+                double basicSalary, overtimeHours, overtimeRate;
+                Console.Write("Enter Basic Salary: ");
+                while (!double.TryParse(Console.ReadLine(), out basicSalary) || basicSalary < 0)
+                {
+                    Console.Write("Invalid amount. Enter Basic Salary: ");
+                }
+                Console.Write("Enter Overtime Hours: ");
+                while (!double.TryParse(Console.ReadLine(), out overtimeHours) || overtimeHours < 0)
+                {
+                    Console.Write("Invalid amount. Enter Overtime Hours: ");
+                }
+                Console.Write("Enter Overtime Rate per Hour: ");
+                while (!double.TryParse(Console.ReadLine(), out overtimeRate) || overtimeRate < 0)
+                {
+                    Console.Write("Invalid amount. Enter Overtime Rate per Hour: ");
+                }
+                employees.Add(new Developer(name, id, basicSalary, overtimeHours, overtimeRate));
+            }
+            else
+            {
+                double stipend;
+                Console.Write("Enter Stipend: ");
+                while (!double.TryParse(Console.ReadLine(), out stipend) || stipend < 0)
+                {
+                    Console.Write("Invalid amount. Enter Stipend: ");
+                }
+                employees.Add(new Intern(name, id, stipend));
+            }
+        }
+
+        Console.WriteLine("\n=== SALARY SLIPS ===");
+        double totalPayout = 0;
+
+        // foreach loop treats every object as "Employee" type
+        // but emp.DisplaySalarySlip() and emp.CalculateSalary() run the ACTUAL
+        // Manager/Developer/Intern version at runtime - this is runtime polymorphism
+        foreach (Employee emp in employees)
+        {
+            emp.DisplaySalarySlip();
+            totalPayout += emp.CalculateSalary();
+        }
+
+        Console.WriteLine("\n================================");
+        Console.WriteLine("Total Payroll Payout: Rs. " + totalPayout.ToString("N2"));
+        Console.WriteLine("================================");
+    }
+}
