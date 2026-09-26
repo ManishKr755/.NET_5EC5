@@ -21,7 +21,7 @@
     Name:
     <asp:TextBox ID="txtName" runat="server"></asp:TextBox>
 
-    <!-- Validates that the name field is not empty -->
+    <!-- Checks that the name field is not empty -->
     <asp:RequiredFieldValidator
         ID="rfvName"
         runat="server"
@@ -36,7 +36,7 @@
     Email:
     <asp:TextBox ID="txtEmail" runat="server"></asp:TextBox>
 
-    <!-- Checks whether the email field is filled -->
+    <!-- Checks that the email field is not empty -->
     <asp:RequiredFieldValidator
         ID="rfvEmail"
         runat="server"
@@ -45,7 +45,7 @@
         ForeColor="Red">
     </asp:RequiredFieldValidator>
 
-    <!-- Checks whether the entered email follows a valid email format -->
+    <!-- Checks whether the email has a valid format -->
     <asp:RegularExpressionValidator
         ID="revEmail"
         runat="server"
@@ -57,7 +57,7 @@
 
     <br /><br />
 
-    <!-- Gender selection using radio buttons -->
+    <!-- Gender selection -->
     Gender:
 
     <asp:RadioButton
@@ -74,14 +74,14 @@
 
     <br /><br />
 
-    <!-- Event selection dropdown -->
+    <!-- Event selection -->
     Event:
 
     <asp:DropDownList
         ID="ddlEvent"
         runat="server">
 
-        <!-- Empty value is used so the validator can detect no selection -->
+        <%-- Empty value allows the validator to detect that no event was selected --%>
         <asp:ListItem Text="-- Select Event --" Value=""></asp:ListItem>
 
         <asp:ListItem Text="Tech Seminar" Value="Tech Seminar"></asp:ListItem>
@@ -90,7 +90,7 @@
 
     </asp:DropDownList>
 
-    <!-- Ensures that the user selects an event from the dropdown -->
+    <!-- Ensures that an event is selected -->
     <asp:RequiredFieldValidator
         ID="rfvEvent"
         runat="server"
@@ -119,7 +119,7 @@
         ForeColor="Red">
     </asp:RequiredFieldValidator>
 
-    <!-- Validates that the phone number contains exactly 10 digits -->
+    <!-- Checks that the phone number contains exactly 10 digits -->
     <asp:RegularExpressionValidator
         ID="revPhone"
         runat="server"
@@ -131,7 +131,7 @@
 
     <br /><br />
 
-    <!-- Register button; its Click event is handled in Default.aspx.cs -->
+    <!-- Register button -->
     <asp:Button
         ID="btnRegister"
         runat="server"
@@ -140,7 +140,7 @@
 
     <br /><br />
 
-    <!-- Displays the registration details after successful submission -->
+    <!-- Displays registration details after successful submission -->
     <asp:Label
         ID="lblDetails"
         runat="server">
