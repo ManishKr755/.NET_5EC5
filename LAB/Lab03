@@ -1,1 +1,505 @@
+using System;
 
+class Expense
+{
+    private DateTime date;
+    private string description;
+    private double amount;
+
+    // Constructor
+    public Expense(DateTime expenseDate, string desc, double amt)
+    {
+        date = expenseDate;
+        description = desc;
+        amount = amt;
+    }
+
+    // Display expense details
+    public void DisplayExpense()
+    {
+        Console.WriteLine(
+            date.ToString("dd-MM-yyyy") +
+            " | " + description +
+            " | Rs. " + amount);
+    }
+
+    // Get amount
+    public double GetAmount()
+    {
+        return amount;
+    }
+
+    // Get date
+    public DateTime GetDate()
+    {
+        return date;
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        // Array to store expenses
+        Expense[] expenses = new Expense[100];
+
+        int count = 0;
+        int choice = 0;
+
+        do
+        {
+            Console.WriteLine("\n==================================");
+            Console.WriteLine("      EXPENSE TRACKING SYSTEM");
+            Console.WriteLine("==================================");
+            Console.WriteLine("1. Add Expense");
+            Console.WriteLine("2. View Expenses");
+            Console.WriteLine("3. Delete Expense");
+            Console.WriteLine("4. Exit");
+            Console.WriteLine("==================================");
+            Console.Write("Enter your choice: ");
+
+            // Menu input
+            try
+            {
+                choice = int.Parse(Console.ReadLine());
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine(
+                    "Invalid choice. Please enter a number from 1 to 4.");
+                continue;
+            }
+
+            switch (choice)
+            {
+                // =========================================
+                // 1. ADD EXPENSE
+                // =========================================
+                case 1:
+
+                    int numberOfExpenses;
+
+                    // Ask number of expenses
+                    while (true)
+                    {
+                        try
+                        {
+                            Console.Write(
+                                "\nHow many expenses do you want to add? ");
+
+                            numberOfExpenses =
+                                int.Parse(Console.ReadLine());
+
+                            if (numberOfExpenses <= 0)
+                            {
+                                throw new Exception(
+                                    "Number of expenses must be greater than zero.");
+                            }
+
+                            if (count + numberOfExpenses > expenses.Length)
+                            {
+                                throw new Exception(
+                                    "You can add only " +
+                                    (expenses.Length - count) +
+                                    " more expenses.");
+                            }
+
+                            break;
+                        }
+                        catch (FormatException)
+                        {
+                            Console.WriteLine(
+                                "Invalid input. Please enter a number.");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                    }
+
+                    // Add expenses
+                    for (int i = 1; i <= numberOfExpenses; i++)
+                    {
+                        Console.WriteLine(
+                            "\n---------- Expense " + i + " ----------");
+
+                        // =================================
+                        // DATE
+                        // =================================
+
+                        DateTime date;
+
+                        while (true)
+                        {
+                            try
+                            {
+                                Console.Write(
+                                    "Date (dd-MM-yyyy): ");
+
+                                date = DateTime.ParseExact(
+                                    Console.ReadLine(),
+                                    "dd-MM-yyyy",
+                                    null);
+
+                                // Future date validation
+                                if (date.Date > DateTime.Today)
+                                {
+                                    throw new Exception(
+                                        "Date cannot be in the future. Please enter again.");
+                                }
+
+                                break;
+                            }
+                            catch (FormatException)
+                            {
+                                Console.WriteLine(
+                                    "Invalid date. Please use dd-MM-yyyy.");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
+                        }
+
+                        // =================================
+                        // DESCRIPTION
+                        // =================================
+
+                        Console.Write("Description: ");
+                        string description = Console.ReadLine();
+
+                        // =================================
+                        // AMOUNT
+                        // =================================
+
+                        double amount;
+
+                        while (true)
+                        {
+                            try
+                            {
+                                Console.Write("Amount: ");
+
+                                amount =
+                                    double.Parse(Console.ReadLine());
+
+                                if (amount <= 0)
+                                {
+                                    throw new Exception(
+                                        "Amount must be greater than zero.");
+                                }
+
+                                break;
+                            }
+                            catch (FormatException)
+                            {
+                                Console.WriteLine(
+                                    "Invalid amount. Please enter a number.");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
+                        }
+
+                        // Create Expense object
+                        expenses[count] =
+                            new Expense(
+                                date,
+                                description,
+                                amount);
+
+                        count++;
+
+                        Console.WriteLine(
+                            "Expense added successfully!");
+                    }
+
+                    break;
+
+                // =========================================
+                // 2. VIEW EXPENSES
+                // =========================================
+                case 2:
+
+                    if (count == 0)
+                    {
+                        Console.WriteLine(
+                            "\nNo expenses found. Please add an expense first.");
+                        break;
+                    }
+
+                    // Sort expenses by date
+                    // Newest date first
+                    for (int i = 0; i < count - 1; i++)
+                    {
+                        for (int j = i + 1; j < count; j++)
+                        {
+                            if (expenses[i].GetDate() <
+                                expenses[j].GetDate())
+                            {
+                                Expense temp = expenses[i];
+
+                                expenses[i] =
+                                    expenses[j];
+
+                                expenses[j] =
+                                    temp;
+                            }
+                        }
+                    }
+
+                    Console.WriteLine(
+                        "\n========== ALL EXPENSES ==========");
+
+                    double total = 0;
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        // Serial number
+                        Console.Write((i + 1) + ". ");
+
+                        // Expense details
+                        expenses[i].DisplayExpense();
+
+                        // Calculate total
+                        total +=
+                            expenses[i].GetAmount();
+                    }
+
+                    Console.WriteLine(
+                        "----------------------------------");
+
+                    Console.WriteLine(
+                        "Total Expense : Rs. " + total);
+
+                    Console.WriteLine(
+                        "==================================");
+
+                    break;
+
+                // =========================================
+                // 3. DELETE EXPENSE
+                // =========================================
+                case 3:
+
+                    if (count == 0)
+                    {
+                        Console.WriteLine(
+                            "\nNo expenses found. Please add an expense first.");
+                        break;
+                    }
+
+                    // Sort by date before displaying
+                    for (int i = 0; i < count - 1; i++)
+                    {
+                        for (int j = i + 1; j < count; j++)
+                        {
+                            if (expenses[i].GetDate() <
+                                expenses[j].GetDate())
+                            {
+                                Expense temp =
+                                    expenses[i];
+
+                                expenses[i] =
+                                    expenses[j];
+
+                                expenses[j] =
+                                    temp;
+                            }
+                        }
+                    }
+
+                    // Display expenses
+                    Console.WriteLine(
+                        "\n========== ALL EXPENSES ==========");
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        Console.Write((i + 1) + ". ");
+
+                        expenses[i].DisplayExpense();
+                    }
+
+                    Console.WriteLine(
+                        "==================================");
+
+                    // =================================
+                    // NUMBER OF EXPENSES TO DELETE
+                    // =================================
+
+                    int deleteCount;
+
+                    while (true)
+                    {
+                        try
+                        {
+                            Console.Write(
+                                "\nHow many expenses do you want to delete? ");
+
+                            deleteCount =
+                                int.Parse(Console.ReadLine());
+
+                            if (deleteCount <= 0 ||
+                                deleteCount > count)
+                            {
+                                throw new Exception(
+                                    "Please enter a valid number of expenses.");
+                            }
+
+                            break;
+                        }
+                        catch (FormatException)
+                        {
+                            Console.WriteLine(
+                                "Invalid input. Please enter a number.");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                    }
+
+                    // =================================
+                    // STORE SERIAL NUMBERS
+                    // =================================
+
+                    int[] deleteNumbers =
+                        new int[deleteCount];
+
+                    for (int i = 0;
+                         i < deleteCount;
+                         i++)
+                    {
+                        while (true)
+                        {
+                            try
+                            {
+                                Console.Write(
+                                    "Enter serial number " +
+                                    (i + 1) +
+                                    " to delete: ");
+
+                                int serialNumber =
+                                    int.Parse(
+                                        Console.ReadLine());
+
+                                // Check valid serial number
+                                if (serialNumber < 1 ||
+                                    serialNumber > count)
+                                {
+                                    throw new Exception(
+                                        "Invalid serial number.");
+                                }
+
+                                // Check duplicate
+                                bool duplicate = false;
+
+                                for (int j = 0;
+                                     j < i;
+                                     j++)
+                                {
+                                    if (deleteNumbers[j] ==
+                                        serialNumber)
+                                    {
+                                        duplicate = true;
+                                        break;
+                                    }
+                                }
+
+                                if (duplicate)
+                                {
+                                    throw new Exception(
+                                        "You already selected this expense.");
+                                }
+
+                                // Store serial number
+                                deleteNumbers[i] =
+                                    serialNumber;
+
+                                break;
+                            }
+                            catch (FormatException)
+                            {
+                                Console.WriteLine(
+                                    "Please enter a valid number.");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(
+                                    ex.Message);
+                            }
+                        }
+                    }
+
+                    // =================================
+                    // DELETE SELECTED EXPENSES
+                    // =================================
+
+                    for (int i = 0;
+                         i < deleteCount;
+                         i++)
+                    {
+                        int index =
+                            deleteNumbers[i] - 1;
+
+                        expenses[index] = null;
+                    }
+
+                    // =================================
+                    // SHIFT REMAINING EXPENSES
+                    // =================================
+
+                    int newCount = 0;
+
+                    for (int i = 0;
+                         i < count;
+                         i++)
+                    {
+                        if (expenses[i] != null)
+                        {
+                            expenses[newCount] =
+                                expenses[i];
+
+                            newCount++;
+                        }
+                    }
+
+                    // Clear unused positions
+                    for (int i = newCount;
+                         i < count;
+                         i++)
+                    {
+                        expenses[i] = null;
+                    }
+
+                    count = newCount;
+
+                    Console.WriteLine(
+                        "\nSelected expenses deleted successfully!");
+
+                    break;
+
+                // =========================================
+                // 4. EXIT
+                // =========================================
+                case 4:
+
+                    Console.WriteLine(
+                        "\nThank you for using Expense Tracking System!");
+
+                    break;
+
+                default:
+
+                    Console.WriteLine(
+                        "\nInvalid choice. Please select 1 to 4.");
+
+                    break;
+            }
+
+        } while (choice != 4);
+
+        Console.ReadKey();
+    }
+}
