@@ -1,0 +1,34 @@
+﻿@model List<LAB06.Models.Product>
+
+<h1>Product Catalog</h1>
+
+<table border="1" cellpadding="10">
+    <tr>
+        <th>ID</th>
+        <th>Product Name</th>
+        <th>Category</th>
+        <th>Brand</th>
+        <th>Price</th>
+        <th>Color</th>
+        <th>Stock</th>
+        <th>Action</th>
+    </tr>
+
+    @foreach (var product in Model)
+    {
+        <tr>
+            <td>@product.Id</td>
+            <td>@product.Name</td>
+            <td>@product.Category</td>
+            <td>@product.Brand</td>
+            <td>₹@product.Price</td>
+            <td>@product.Color</td>
+            <td>@product.Stock</td>
+            <td>
+                <a href="@Url.Action("Details", "Product", new { id = product.Id })">
+                    View Details
+                </a>
+            </td>
+        </tr>
+    }
+</table>
