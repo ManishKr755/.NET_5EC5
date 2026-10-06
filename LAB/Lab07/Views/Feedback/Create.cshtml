@@ -1,0 +1,14 @@
+﻿@model Lab07.Models.Feedback
+
+@{
+    ViewBag.Title = "Give Feedback";
+}
+
+<h2>Give Feedback</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    @Html.Partial("_FeedbackForm", Model)
+}

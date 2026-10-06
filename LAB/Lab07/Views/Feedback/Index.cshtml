@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Lab07.Models.Feedback>
+
+@{
+    ViewData["Title"] = "Feedback List";
+}
+
+<h2>Feedback List</h2>
+
+<p>
+    @Html.ActionLink("Give New Feedback", "Create", "Feedback")
+</p>
+
+<table border="1">
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Rating</th>
+        <th>Actions</th>
+    </tr>
+
+    @foreach (var feedback in Model)
+    {
+        <tr>
+            <td>@feedback.Id</td>
+            <td>@feedback.Name</td>
+            <td>@feedback.Email</td>
+            <td>@feedback.Rating</td>
+
+            <td>
+                @Html.ActionLink("Details", "Details",
+                    new { id = feedback.Id })
+                |
+
+                @Html.ActionLink("Delete", "Delete",
+                    new { id = feedback.Id })
+            </td>
+        </tr>
+    }
+</table>

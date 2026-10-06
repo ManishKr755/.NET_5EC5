@@ -1,0 +1,52 @@
+﻿@model Lab07.Models.Feedback
+
+<div>
+    @Html.LabelFor(model => model.Name)
+    <br />
+    @Html.TextBoxFor(model => model.Name)
+    @Html.ValidationMessageFor(model => model.Name)
+</div>
+
+<br />
+
+<div>
+    @Html.LabelFor(model => model.Email)
+    <br />
+    @Html.TextBoxFor(model => model.Email)
+    @Html.ValidationMessageFor(model => model.Email)
+</div>
+
+<br />
+
+<div>
+    @Html.LabelFor(model => model.Message)
+    <br />
+    @Html.TextAreaFor(model => model.Message, 5, 40, null)
+    @Html.ValidationMessageFor(model => model.Message)
+</div>
+
+<br />
+
+<div>
+    @Html.LabelFor(model => model.Rating)
+    <br />
+
+    @Html.DropDownListFor(
+        model => model.Rating,
+        new SelectList(new[]
+        {
+            new { Value = 1, Text = "1 - Very Poor" },
+            new { Value = 2, Text = "2 - Poor" },
+            new { Value = 3, Text = "3 - Average" },
+            new { Value = 4, Text = "4 - Good" },
+            new { Value = 5, Text = "5 - Excellent" }
+        }, "Value", "Text"),
+        "-- Select Rating --"
+    )
+
+    @Html.ValidationMessageFor(model => model.Rating)
+</div>
+
+<br />
+
+<input type="submit" value="Submit Feedback" />
