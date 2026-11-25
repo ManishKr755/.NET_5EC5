@@ -1,0 +1,49 @@
+﻿@model Lab08.Models.InventoryItem
+
+@{
+    ViewData["Title"] = "Edit Inventory Item";
+}
+
+<h2>Edit Inventory Item</h2>
+
+@if (ViewBag.Error != null)
+{
+    <p>@ViewBag.Error</p>
+}
+
+<form asp-controller="Inventory" asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div>
+        <label asp-for="ItemName">Item Name:</label>
+        <input asp-for="ItemName" maxlength="100" required />
+    </div>
+
+    <br />
+
+    <div>
+        <label asp-for="Quantity">Quantity:</label>
+        <input asp-for="Quantity" type="number" min="0" required />
+    </div>
+
+    <br />
+
+    <div>
+        <label asp-for="PricePerUnit">Price Per Unit (₹):</label>
+        <input asp-for="PricePerUnit"
+               type="number" min="0" max="999999.99"
+               step="0.01" required />
+    </div>
+
+    <br />
+
+    <p>
+        Current Total Price: ₹@Model.TotalPrice.ToString("N2")
+    </p>
+
+    <button type="submit">Update Item</button>
+</form>
+
+<p>
+    <a asp-action="Index">Back to Inventory</a>
+</p>
